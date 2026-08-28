@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>배우 진기주 데뷔 11주년 축하해</title>
+    <!-- 파티클 효과 라이브러리 (tsparticles) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/engine@3.1.0/tsparticles.engine.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/preset-bubbles@3.1.0/tsparticles.preset.bubbles.min.js"></script>
+    <style>
+        /* '그리운 프롬솔' 웹폰트 정확한 소스로 설정 */
+        @font-face {
+            font-family: 'fromsol';
+            src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/2607161334@griun-fromsol-rg/griun-fromsol-rg/Griun_Fromsol-Rg.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* 디즈니 미니 마우스 커서 적용 */
+        * {
+            cursor: url('https://cdn.cursors-4u.net/previews/disney-minnie-mouse-01d68b82-32.webp') 32 32, auto !important;
+        }
+
+        :root {
+            --primary-color: #ff7eb9;
+            --bg-color: #fff5f8;
+            --card-bg: #ffffff;
+            --text-color: #4a4a4a;
+            --shadow: 0 10px 20px rgba(255, 126, 185, 0.15);
+        }
+
+        body {
+            font-family: 'fromsol', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            position: relative;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-shadow: 2px 2px 0px #fff;
+        }
+
+        /* 작성 폼 스타일 */
+        .form-container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            margin-bottom: 35px;
+        }
+
+        .form-container h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ffd1e6;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--text-color);
+            background-color: #fff9fb;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .submit-btn:hover {
+            background-color: #ff65a3;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 스크롤 피드 스타일 */
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .message-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .message-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 25px rgba(255, 126, 185, 0.25);
+        }
+
+        .message-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; left: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #ffafcc, #ffc8dd);
+        }
+
+        /* 기본 상태: 2줄만 보이고 말줄임 처리 */
+        .message-content {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: #555;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-bottom: 20px;
+            
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 펼쳐졌을 때의 상태 */
+        .message-card.expanded .message-content {
+            display: block;
+            -webkit-line-clamp: unset;
+            overflow: visible;
+        }
+
+        /* 더보기 안내 텍스트 */
+        .expand-hint {
+            font-size: 0.9rem;
+            color: #bbb;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: normal;
+        }
+
+        .message-card.expanded .expand-hint {
+            display: none;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .message-author {
+            font-weight: 800;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .card-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* 수정/삭제 버튼 스타일 통일 */
+        .action-btn {
+            border: none;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .edit-btn {
+            background-color: #fff0f5;
+            color: #ff65a3;
+        }
+
+        .edit-btn:hover {
+            background-color: #ffe0ee;
+        }
+
+        .delete-btn {
+            background-color: #ffe6ee;
+            color: #ff4d94;
+        }
+
+        .delete-btn:hover {
+            background-color: #ffccd5;
+        }
+
+        /* 수정 모달창 스타일 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-sizing: border-box;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-cancel-btn {
+            background-color: #f1f1f1;
+            color: #777;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .modal-cancel-btn:hover {
+            background-color: #e2e2e2;
+        }
+
+        #tsparticles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        .loading-text {
+            text-align: center;
+            color: #ff7eb9;
+            font-size: 1.2rem;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body onpointerdown="createBubbleAt(event)">
+
+    <div id="tsparticles"></div>
+
+    <div class="container">
+        <div class="subtitle">주디스가 기주에게</div>
+
+        <!-- 새 글 작성 입력 폼 -->
+        <div class="form-container">
+            <h3>💌 축하 메시지 남기기</h3>
+            <form id="guestbookForm" onsubmit="addMessage(event)">
+                <div class="form-group">
+                    <input type="text" id="authorInput" class="form-input" placeholder="닉네임 (예: 주디스)" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="passwordInput" class="form-input" placeholder="비밀번호 4자리 (글 수정 시 필요해요!)" maxlength="4" pattern="[0-9]{4}" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="contentInput" class="form-textarea" placeholder="기주 배우님에게 전할 따뜻한 메시지를 남겨주세요! (이모티콘도 사용 가능해요 💕)" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn" id="submitBtn">등록하기 ✨</button>
+            </form>
+        </div>
+
+        <!-- 스크롤하며 보는 방명록 피드 -->
+        <div class="feed-container" id="feedContainer">
+            <div class="loading-text">메시지를 불러오는 중이에요... 💌</div>
+        </div>
+    </div>
+
+    <!-- 글 수정 모달창 -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-container">
+            <h3>✏️ 축하 메시지 수정하기</h3>
+            <form id="editForm" onsubmit="saveEditedMessage(event)">
+                <div class="form-group">
+                    <input type="text" id="editAuthorInput" class="form-input" placeholder="닉네임" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="editContentInput" class="form-textarea" placeholder="메시지 내용" required></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="modal-cancel-btn" onclick="closeEditModal()">취소</button>
+                    <button type="submit" class="submit-btn">수정 완료 ✨</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ★ [설정] 본인의 JsonBin 빈 설정 (처음에는 자동으로 빈 저장소가 생성됩니다)
+        // 아래 빈칸에 본인의 jsonbin.io Master Key를 넣어주세요!
+        const API_KEY = "YOUR_JSONBIN_MASTER_KEY"; 
+        const BIN_ID_KEY = "jinKijooBinId"; // 브라우저가 관리할 Bin 고유 주소 저장 키
+
+        const initialData = [
+            {
+                author: "- 쿠마 -",
+                password: "0000",
+                content: "기주 배우님 데뷔 11주년 진짜 축하드립니다!! 🎉\n배우님께서 걸어오신 11년 동안 정말 많은 작품과 캐릭터를 만나오셨다는 게 너무 멋진 것 같아요 앞으로 <슬리핑닥터>를 포함해 어떤 작품과 모습으로 만나게 될지 항상 기대하고 있을게요🩷 11주년을 맞이한 지금, 행복한 하루 보내셨으면 좋겠고 앞으로의 날들도 좋은 일들로 가득했으면 좋겠습니다! 묵묵히 응원하고 있을게요 다시 한 번 11주년 진심으로 축하드립니다!"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "안녕하세요 진기주 배우님 ♡ 데뷔 11주년 너무너무 축하드려요! 그동안 출연하신 작품들을 보면서 웃고 울고 너무 즐거웠어요. 앞으로도 하시는 모든 작품들 진심으로 응원하겠습니다. 사랑해요 !"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "-to.기주배우님-\n안녕하세요 기주배우님! 요즘 기주 배우님에게 빠진 고등학생 주디스 입니다\n데뷔 11주년 진심으로 축하드립니다!\n저는 기주배우님을 알게된지 얼마되지않아서 기주배우님과 많은 시간을 함께하지는 못했지만 지금이라도 배우님이라는 숨겨진 보석을 발견한거같아서 기분이 좋아요 전에 알지못한만큼 앞으로 행복한 주디스 생활 하고싶습니다! 많이많이 응원할게요 사랑합니다 기주배우님❤️🐰"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "안녕, 나는 항상 기주 언니 옆에 있을게 🫶🏻💕 \n진기주 언니 데뷔 11주년 축하해요🎉🥳\n\n진기주 언니 데뷔 11주년 축하해요🎉🥳11년이라는 시간이 결코 짧지 않았죠...🥹 긴 시간 동안 많은 과정을 겪으셨고 그 과정에서 노력과 열정 🥹그리고 의지가 있었기에 지금의 자리에 있을 수 있었을 거예요👏🏻💕💕\n\n기주 언니가 배우로서 걸어온 길을 보며 항상 감사했어요..🩵 맡는 작품마다 늘 다른 모습을 보여주시고, 매번 새로운 도전도 마다하지 않으셨잖아요...^^ 그런 모습이 너무 자랑스러워요🫶🏻🥹 특히 올해는 언니 커리어에서 가장 에픽한 성공이라고 생각해요. 정말 멋진 결과였어요.🎉🎉👏🏻🩵🥳\n\n언니의 노력 덕분이에요 남들이 뭐라고 하든 신경 쓰지 않고😉😘 마음이 가는 길을 묵묵히 걸어가서 증명해낸 거잖아요. 고마워요 언니😘\n\n앞으로도 지금의 성공이 계속 이어져서 15주년, 20주년까지 함께할 수 있길 바라요.🫶🏻🙌🏻🏡기주 언니가 더더욱 빛나길 바라고✨ 해외 활동도 많이 하고✨영화도 다시 찍고✨ 예능에도 자주 나오고✨글로벌 브랜드 광고도 많이 했으면 좋겠어요✨☘️\n\n다시 한번 데뷔 11주년 진심으로 축하해요 언니👏🏻🥳🫶🏻🫶🏻 사랑해요^^ 앞으로도 계속 응원할게요 🤞🏻🤞🏻"
+            },
+            {
+                author: "-시아 @ciabyscene-",
+                password: "0000",
+                content: "가끔은 이렇게 멀리 있는 사람을 어떻게 이렇게까지 좋아할 수 있을까 싶어요. 마음이라는 게 참… 💗 언니를 좋아하게 된 건 운명처럼 시작됐지만, 그 마음을 오래도록 이어가는 건 제 선택이에요. 11주년 정말 축하하고, 언니의 20주년까지, 아니 그보다 훨씬 더 오래오래 이 마음 간직할게요~ ❤️"
+            },
+            {
+                author: "-공카 Mal랑말랑-",
+                password: "0000",
+                content: "To Actress Jin Ki-joo, someone who left everything to chase her dream, smiling brightly through both the good days and the challenging ones, is already in her 11th year as an actress who always blooms and shines beautifully in every role she takes.\n\nCongratulations on your 11th debut anniversary! Here's to many more years ahead—watching you bring new stories to life through your characters, while we earnestly stay right here to listen to every single one.\n\n\n꿈을 향해 모든 것을 던지고, 기쁜 날이든 힘든 날이든 환하게 웃어 보이던 진기주 배우님, 어느덧 맡은 모든 역할 속에서 언제나 아름답게 피어나고 빛나는 배우로서 11번째 봄을 맞이하셨네요.\n\n데뷔 11주년을 진심으로 축하드립니다! 앞으로 다가올 많은 날들 속에서 배우님이 전달해 줄 수많은 캐릭터들의 이야기, 그리고 그 이야기들을 진심을 다해 늘 그 자리에서 함께 들어줄 우리들... 앞으로도 오랫동안 함께해요."
+            },
+            {
+                author: "-ecrin-",
+                password: "0000",
+                content: "당신은 11년 동안 아름다운 캐릭터를 연기해왔어요! 당신의 성공을 지켜보고 지켜보는 것은 저에게 매우 소중하고 특별한 순간입니다! 네가 평생 행복하길 바라, 언니, 항상 빛나길!! 11주년 출간 기념 축하해요, 키주 언니! 난 항상 널 지지할 거야"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "기주언니 !! 벌써 데뷔 11년이라뇨 .. 너무 축하드리구 제가 많이 사랑해요 🫶"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "데뷔 11주년을 진심으로 축하합니다! 배우로서의 노력과 끈기에 진심으로 감사드려요. 당신은 언제나 저에게 큰 영감을 줘요! 항상 행복하고 건강하길 바랍니다! 사랑해 기주 언니"
+            },
+            {
+                author: "-트위터, 인스타 아침햇살 @zuu_sunlight-",
+                password: "0000",
+                content: "여러 번의 선택과 도전을 지나 배우 진기주로 걸어온 11년을 진심으로 축하해요.\n어떤 경험에도 쓰임이 있다고 믿으며 걸어온 시간들이 지금의 진기주라는 사람을 더욱 빛나게 만든 것 같아요.\n앞으로 만나게 될 새로운 계절과 수많은 이야기 속에서도 그대만의 따뜻함과 깊은 마음이 오래도록 빛나길 바랍니다.\n11년의 모든 순간을 지나 앞으로의 시간까지, 오래도록 응원할게요 :)"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "기주 배우님! 데뷔 11주년 진심으로 축하드립니다"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "데뷔 11주년 너무 축하드려요! 앞으로도 응원하겠습니다!"
+            },
+            {
+                author: "-Emma (@emma_hhhce1121)-",
+                password: "0000",
+                content: "언니, 데뷔 11주년 정말 정말 축하해요!!!!\n앞으로도 계속 행복해야 해요! 그리고 항상 주디스들에게 많은 힘을 주셔서 정말 고마워요. 언니는 언제나 주디스들의 자랑이에요! 사랑해요! 앞으로도 계속 언니를 응원할게요! 🐰🩷🩷"
+            },
+            {
+                author: "-Daisy/이진-",
+                password: "0000",
+                content: "언니, 언니와 함께 데뷔 11주년을 기념하게 되어 매우 기쁩니다! 요즘 많이 바쁘시고 많이 피곤하실 것 같아요! 수고하셨습니다! 언니가 항상 전력을 다하는 모습을 보니 마음이 많이 걱정됩니다. 전 세계에 언니를 사랑하는 팬이 많이 있으며, 중국 팬들 역시 언니를 매우 사랑합니다. 언니가 앞으로 피로를 덜 겪고, 많은 행복을 느끼시길 바랍니다. 언니가 언제나 자신이 좋아하는 좋은 대본을 만나길 바랍니다! 언니는 제 마음속 최고예요💛"
+            },
+            {
+                author: "-지후-",
+                password: "0000",
+                content: "진기주 배우님! 데뷔 11주년 정말 진심으로 축하드립니다! 앞으로의 행보가 더욱 더 기대되는 진기주 배우님을 항상 언제 어디서든 응원 하겠습니다! 항상 열심히 해주셔 감사합니다!"
+            },
+            {
+                author: "-다희-",
+                password: "0000",
+                content: "기주언니가 걸어온 11년을 함께 축하할 수 있어 기뻐요! 작품 속에서 보여주신 다양한 모습들을 보면서 저도 많이 웃고, 울고, 위로받았어요. 기주언니의 따뜻함과 진심이 항상 느껴져요. 11년 동안 수많은 장면 속에서 빛나주셔서 감사해요. 앞으로의 계절도 함께 응원할게요! 데뷔 11주년 진심으로 축하드려요💚"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "기주 배우님 데뷔 11주년 이라니 정말 축하드려요🥳 앞으로도 계속 응원하겠습니다! 건강하세요~"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "congratulations unni on your 11th debut anniversary as an actress. we wish you more success in the future, im so happy to be your fan ❤️"
+            },
+            {
+                author: "-공카 가윤-",
+                password: "0000",
+                content: "기주 배우님의 11주년을 정말 축하합니다!"
+            },
+            {
+                author: "-@kijoo_8033-",
+                password: "0000",
+                content: "진기주우우우!!! 11주면 넘넘 축하하고 앞으로도 좋은 작품 많이 찍아줭!! 항상 멀리에서도 응원할게사랑해🩷"
+            },
+            {
+                author: "-정@윤-",
+                password: "0000",
+                content: "안녕하세요 진기주배우님을 좋아하는 19살 주디스입니다 데뷔 11주년 축하드려용 진짜 참교육때 푹~ 빠졌는데 벌써 데뷔 11주년이라는게 믿기지가 않네요 그리거 데뷔작인 두번째 스물살 너무너무 잘봤고요 그리고 오! 삼광빌라, 지금부터 쇼타임, 어쩌다 마주친 그대, 언더커버 하이스쿨, 달의연인 등등 너무너무 잘 봤어요!!! 진기주배우님이 배우가 첫번째 직업이 아니라고 들었어요 SDS삼성, 기자, 슈퍼모델, 그리고 지금 직업인 배우까지 진짜 저의 롤모델 이세요 진기주배우님 앞으로 꽃길만 걸으시구요 지금 찍고 계신 드라마 내녕에 방영이 될 슬리핑 닥터 아무 탈 없이 잘 끝내셨으면 좋겠습니다. 한번 더 데뷔 11주년 축하드려용 사랑해요"
+            },
+            {
+                author: "-@진짜장-",
+                password: "0000",
+                content: "진기주 배우님 데뷔 11주년을 진심으로 축하드려요! 항상 좋은 연기와 멋진 모습 보여주셔서 정말 감사해요. 배우님을 좋아하고 응원할 수 있어서 너무 행복합니다. 앞으로도 오래오래 건강하시고, 하고 싶은 작품 모두 하시면서 행복한 날들만 가득하셨으면 좋겠어요! 11주년 정말 축하드리고 앞으로도 열심히 응원하겠습니다!"
+            },
+            {
+                author: "-이@연-",
+                password: "0000",
+                content: "안녕하세요 전 주디스가 된지 73일이 된 초5 잼민이 입니다 참교육을 보고 너무 끌려서 찾아 봤는데 이렇게까지 매력적이고 귀여울수가 없더라고요..그래서 사진도 막 모으고 진기주님 사진도 프린트하고 이렇게까지 덕질을 해본적이 없었는데 아는 주디스들 언니 동생 친구 덕분에 많은걸 알고 점점 진심으로 좋아하게 됐어요 엄마가 그렇게 진기주 열심히 좋아하는 열정으로 공부를 하라 그런데 그건 또 다른 이야기니깐 ㅎㅎㅎ 전 엄마가 조금 좋아하고 말꺼라 하는데 아니에요 저 진짜 하루에 진기주는 3번 넘게 검색하는거 같아요 학교 패드에도 진기주 사진이랑 동영상 몰래 본적도 많고 주디스 하길 너무 하길 잘한거 같아요 진짜 어른되면 언니만 따라다니고 싶어용 ㅎㅎㅎㅎㅎㅎ 꼭 오래 배우해주세요!!!!! 사랑해요!!!!!!!!"
+            },
+            {
+                author: "-윤@지-",
+                password: "0000",
+                content: "진기주 배우님, 데뷔 11주년을 진심으로 축하드려요! 🎉 벌써 데뷔하신 지 11년이 되었다는 게 정말 신기한 것 같아요. 그동안 여러 작품에서 다양한 캐릭터를 연기하시면서 많은 사람들에게 좋은 모습과 멋진 연기를 보여주셔서 정말 감사해요. 작품마다 캐릭터의 분위기와 감정을 다르게 표현하시는 모습이 정말 인상 깊었고, 배우님이 나오는 작품은 믿고 보게 되는 것 같아요.배우님이 맡은 역할을 그냥 연기하는 것이 아니라 그 인물의 감정과 이야기를 잘 보여주는 것 같아서 작품을 볼 때 더 집중하게 되는 것 같아요. 밝고 재미있는 모습부터 진지하고 감정적인 모습까지 다양한 모습을 보여주셔서 볼 때마다 새로운 매력을 발견할 수 있어서 좋아요.11년이라는 시간 동안 배우로 활동하면서 기쁜 순간도 많았겠지만 힘들거나 지치는 순간도 있었을 것 같아요. 그래도 지금까지 꾸준히 좋은 작품과 연기를 보여주셔서 정말 대단하고 멋있다고 생각해요. 배우님이 지금까지 걸어오신 시간이 앞으로도 좋은 추억으로 많이 남았으면 좋겠어요.앞으로 배우님이 어떤 작품을 하시고 어떤 새로운 역할을 맡게 되실지도 정말 기대돼요! 지금처럼 배우님만의 매력과 연기를 오래오래 보여주셨으면 좋겠고, 하고 싶은 작품도 많이 하셨으면 좋겠어요. 무엇보다 항상 건강하시고 행복한 일들이 가득했으면 좋겠습니다.앞으로도 배우님의 활동을 열심히 응원하고, 좋은 작품이 나올 때마다 즐겁게 챙겨볼게요! 데뷔 11주년을 다시 한 번 진심으로 축하드리고, 앞으로의 12주년, 13주년 그리고 그 이후의 모든 순간까지 행복하고 좋은 일만 가득하시길 바랄게요.진기주 배우님, 11주년 정말정말 축하드려요! 앞으로도 오래오래 좋은 모습 보여주세요. 항상 응원하겠습니다! 💗"
+            },
+            {
+                author: "-짼디-",
+                password: "0000",
+                content: "기주언니 11주년 축하해요!! 항상 행복한 일만 생기길❤️"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "잎으로도 승승 장구하길"
+            },
+            {
+                author: "-다니-",
+                password: "0000",
+                content: "배우 진기주 님의 데뷔 11주년을 진심으로 축하드려요!\n\n정말 긴 여정이었고, 그 여정의 모든 걸음이 결코 쉽지만은 않았을 거라고 생각해요. 앞으로도 진기주 배우님과 주디가 오랫동안 꽃길을 함께 걸어갈 수 있기를 바라요.\n\n앞으로도 오랜 시간 동안 저희는 계속 배우님을 응원할게요.\n정말 좋은 배우인 진기주 배우님께 앞으로도 좋은 작품들이 많이 찾아오고, 많은 축복이 함께하기를 진심으로 바라요!\n\n사랑해요! 🌸🩷"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "항상 응원하고잇는 2018년부터 좋아하게 된 학생 주디스입니당\n진기주 배우님 항상 응원합니당!!"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "기주 배우님, 데뷔 11주년 진심으로 축하드려요! 배우님을 알게 된 순간부터 제 매일이 더욱 빛나기 시작했어요. 앞으로도 배우님의 새로운 이야기와 빛나는 순간들을 함께할 수 있기를 바라요. 언제나 응원할게요! 앞으로도 오래오래 함께해요. 🤍✨"
+            },
+            {
+                author: "-꼬꼬-",
+                password: "0000",
+                content: "진기주 배우님! 배우 데뷔 11주년 정말로 축하드립니다!! 11년동안 항상 열심히 연기 해주시고 멋진 작품들 찍어주셔서 정말 감사해요♡ 앞으로도 멋지고 또 멋진 작품들 잘 부탁드립니당 촬영하실때 항상 건강하시고 앞으로도 많은 작품 마니마니 기대할게요♡ 다시 한번 진심으로 축하하고 감사합니다! 화이팅!!"
+            },
+            {
+                author: "-CoCo_yun-",
+                password: "0000",
+                content: "배우 진기주님 데뷔 11주년을 축하드립니다! 언니는 제 삶에 한 줄기 빛처럼 나타나 주셨어요. 앞으로 배우 진기주님께서 더 많은 좋은 작품을 선사해 주시길 바라며, 앞으로도 함께 걸어가고 싶습니다!"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "기주언니 내 인생작을 만들어 줘서 너무너무 고맙고 언니데뷔 11주년을 진심으로 축하해!!"
+            },
+            {
+                author: "-언니의 영원한 팬 박@우-",
+                password: "0000",
+                content: "언니가 벌써 11주년 이라니!! 언니진짜 진심으로 축하 하고, 언니라면 앞으로도 어떤일이든 잘 해결할 수 있을거야! 나의 인생작을 만들어줘서 고맙고 내가 제일 처음으로 본 배우 진기주!! 응원할게!!"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "슬리핑 닥터 기대하고 있을게요 !\n아프지 말고 꼭 오래오래 연기생활 해주세요 ♡\n제가 참교육 보고 주디스가 됬거든요 !\n작품 거의 다 봤어요 !\n지금도 지금부터 쇼타임! 보고 있는중 ..\n진기주 배우님 데뷔 11주년 축하드려요\n늘 응원하고 있을게요 !"
+            },
+            {
+                author: "-Smiley-",
+                password: "0000",
+                content: "진기주 배우님, 데뷔 11주년 진심으로 축하합니다!\n그동안 연기로 주신 감동과 기쁨에 항상 감사하고 있습니다.\n앞으로도 변함없이 응원할게요. 더 멋진 작품 기대하겠습니다! 기주 언니 사랑해요💖"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "데뷔 11주년을 진심으로 축하드립니다! 지금까지 쌓아온 눈부신 시간만큼, 앞으로는 더 높은 곳에서 대박 나시길 응원합니다. 전 세계가 주목하는 우주 대스타가 되는 그날까지 항상 함께할게요. 늘 꽃길만 걸으세요. Fighting!❤️❤️❤️"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "진기주 축하해요❤️❤️"
+            },
+            {
+                author: "-jin주디스-",
+                password: "0000",
+                content: "언니!! 데뷔11주년이라니 축하해요!! 언니의 다양한 작품속에서 행복과 위로를 많이 받았어요:) 앞으로 더 많은 작품을 하시면서 항상 건강하고 행복해야합니둥!! 배우로서 함께해주신 11주년 다시 한번 진심으로 축하드려요!!"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "秦基周 出道11週年快樂 你真的很厲害 不管是演配角還是主角 你都把角色演得很生動 很好看 我很期待妳明年演的 嗜睡醫生哦 祝你接到更多戲 越來越漂亮 11週年快樂\n진기주 배우님, 데뷔 11주년을 축하드립니다.\n\n정말 대단하십니다.\n조연이든 주연이든 맡은 배역마다\n언제나 생생하게 숨을 불어넣으시니까요.\n\n차기작인 <슬리피 닥터>도 정말 기대하고 있습니다.\n\n앞으로도 더 많은 훌륭한 5작품에서 뵙기를 바랍니다.\n정말 아름다우세요.\n데뷔 11주년을 축하합니다! 😊"
+            },
+            {
+                author: "-익명-",
+                password: "0000",
+                content: "날이 갈수록 당신을 더 존경하게 돼요. 앞으로 40년 더 함께해요!"
+            },
+            {
+                author: "-물찐만두-",
+                password: "0000",
+                content: "언니 11년동안 힘든 일들도 많았겠지만 잘 버텨줘서, 팬들에게 행복을 줘서 너무 고마워요! 언니덕분에 요즘 행복한 하루하루를 보내고 있어요! 항상 아프지말고 건강하고 행복해야해요☺️ 사랑합니다아💓"
+            },
+            {
+                author: "-영원한 주디스 아담-",
+                password: "0000",
+                content: "데뷔 11주년 축하해요! 언니를 알게된 건 제 인생에서 가장 잘한 일 중 하나인 것 같아요, 항상 응원할게요!!"
+            }
+        ];
+
+        let guestbookData = [];
+        const feedContainer = document.getElementById('feedContainer');
+        let currentEditIndex = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initParticles();
+            await loadDataFromServer();
+        });
+
+        // 1. 서버에서 데이터 불러오기
+        async function loadDataFromServer() {
+            let binId = localStorage.getItem(BIN_ID_KEY);
+            
+            try {
+                if (!binId) {
+                    // 처음 실행 시 서버에 빈 저장소(Bin) 자동 생성
+                    const createRes = await fetch("https://api.jsonbin.io/v3/b", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-Master-Key": API_KEY,
+                            "X-Bin-Private": "false" // 누구나 읽을 수 있게 공개
+                        },
+                        body: JSON.stringify(initialData)
+                    });
+                    const createData = await createRes.json();
+                    binId = createData.metadata.id;
+                    localStorage.setItem(BIN_ID_KEY, binId);
+                    guestbookData = initialData;
+                } else {
+                    // 기존 Bin 주소에서 데이터 가져오기
+                    const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+                        headers: {
+                            "X-Master-Key": API_KEY
+                        }
+                    });
+                    const data = await res.json();
+                    guestbookData = data.record || initialData;
+                }
+            } catch (e) {
+                console.error("데이터 로드 실패, 기본 데이터 사용:", e);
+                guestbookData = initialData;
+            }
+            renderFeed();
+        }
+
+        // 2. 서버에 데이터 통째로 업로드하기
+        async function saveToServer() {
+            const binId = localStorage.getItem(BIN_ID_KEY);
+            if (!binId) return;
+
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Master-Key": API_KEY
+                    },
+                    body: JSON.stringify(guestbookData)
+                });
+            } catch (e) {
+                console.error("서버 저장 실패:", e);
+            }
+        }
+
+        function renderFeed() {
+            if (guestbookData.length === 0) {
+                feedContainer.innerHTML = `<div class="loading-text">아직 작성된 메시지가 없어요! 첫 글을 남겨보세요 💕</div>`;
+                return;
+            }
+
+            feedContainer.innerHTML = guestbookData.map((item, index) => `
+                <div class="message-card" onclick="toggleCard(event, this)">
+                    <div class="message-content">${escapeHtml(item.content)}</div>
+                    <div class="expand-hint">👇 누르면 전체 내용이 보여요!</div>
+                    <div class="card-footer">
+                        <div class="message-author">${escapeHtml(item.author)}</div>
+                        <div class="card-buttons">
+                            <button class="action-btn edit-btn" onclick="openEditModal(event, ${index})">수정</button>
+                            <button class="action-btn delete-btn" onclick="deleteCard(event, ${index})">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 새 글 등록 함수
+        async function addMessage(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = "등록 중... ⏳";
+
+            const authorInput = document.getElementById('authorInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const contentInput = document.getElementById('contentInput');
+
+            const newPost = {
+                author: authorInput.value.trim(),
+                password: passwordInput.value.trim(),
+                content: contentInput.value.trim()
+            };
+
+            guestbookData.unshift(newPost);
+            
+            // 서버에 저장 후 화면 갱신
+            await saveToServer();
+            renderFeed();
+
+            authorInput.value = '';
+            passwordInput.value = '';
+            contentInput.value = '';
+            
+            submitBtn.disabled = false;
+            submitBtn.textContent = "등록하기 ✨";
+
+            alert("진기주 배우에게 응원 메세지를 남겨 주셔서 감사합니다 ♡");
+        }
+
+        function toggleCard(event, card) {
+            if(event.target.tagName === 'BUTTON') return;
+            card.classList.toggle('expanded');
+        }
+
+        function openEditModal(event, index) {
+            event.stopPropagation();
+            const inputPw = prompt("등록할 때 입력했던 4자리 비밀번호를 입력하세요:");
+            
+            if (inputPw === null) return;
+
+            if (inputPw === guestbookData[index].password) {
+                currentEditIndex = index;
+                document.getElementById('editAuthorInput').value = guestbookData[index].author;
+                document.getElementById('editContentInput').value = guestbookData[index].content;
+                document.getElementById('editModal').style.display = 'flex';
+            } else {
+                alert("비밀번호가 일치하지 않습니다!");
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditIndex = null;
+        }
+
+        async function saveEditedMessage(event) {
+            event.preventDefault();
+            if (currentEditIndex !== null) {
+                guestbookData[currentEditIndex].author = document.getElementById('editAuthorInput').value.trim();
+                guestbookData[currentEditIndex].content = document.getElementById('editContentInput').value.trim();
+
+                await saveToServer();
+                renderFeed();
+                closeEditModal();
+                alert("글이 성공적으로 수정되었습니다! ✨");
+            }
+        }
+
+        async function deleteCard(event, index) {
+            event.stopPropagation();
+            const password = prompt("관리자 비밀번호를 입력하세요:");
+            
+            if (password === "0111") {
+                guestbookData.splice(index, 1);
+                await saveToServer();
+                renderFeed();
+                alert("글이 삭제되었습니다.");
+            } else if (password !== null) {
+                alert("비밀번호가 틀렸습니다!");
+            }
+        }
+
+        function escapeHtml(text) {
+            if(!text) return text;
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        async function initParticles() {
+            await tsParticles.load({
+                id: "tsparticles",
+                options: {
+                    preset: "bubbles",
+                    fullScreen: { enable: true },
+                    particles: {
+                        number: { value: 0 },
+                        color: { value: ["#ffafcc", "#bde0fe", "#ffc8dd", "#fff"] },
+                        opacity: {
+                            value: { min: 0.4, max: 0.8 },
+                            animation: { enable: true, speed: 1.5, sync: false, startValue: "max", destroy: "min" }
+                        },
+                        size: {
+                            value: { min: 3, max: 8 },
+                            animation: { enable: true, speed: 6, sync: false, startValue: "max", destroy: "min" }
+                        },
+                        move: {
+                            enable: true,
+                            speed: 3,
+                            direction: "none",
+                            random: true,
+                            straight: false,
+                            outModes: { default: "destroy" }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createBubbleAt(event) {
+            const particles = tsParticles.domItem(0);
+            if (!particles) return;
+            particles.addParticle({ x: event.clientX, y: event.clientY }, 20);
+        }
+    </script>
+</body>
+</html>
