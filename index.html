@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>배우 진기주 데뷔 11주년 축하해</title>
+    <!-- 파티클 효과 라이브러리 (tsparticles) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/engine@3.1.0/tsparticles.engine.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/preset-bubbles@3.1.0/tsparticles.preset.bubbles.min.js"></script>
+    <style>
+        /* '그리운 프롬솔' 웹폰트 정확한 소스로 설정 */
+        @font-face {
+            font-family: 'fromsol';
+            src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/2607161334@griun-fromsol-rg/griun-fromsol-rg/Griun_Fromsol-Rg.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* 디즈니 미니 마우스 커서 적용 */
+        * {
+            cursor: url('https://cdn.cursors-4u.net/previews/disney-minnie-mouse-01d68b82-32.webp') 32 32, auto !important;
+        }
+
+        :root {
+            --primary-color: #ff7eb9;
+            --bg-color: #fff5f8;
+            --card-bg: #ffffff;
+            --text-color: #4a4a4a;
+            --shadow: 0 10px 20px rgba(255, 126, 185, 0.15);
+        }
+
+        body {
+            font-family: 'fromsol', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            position: relative;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-shadow: 2px 2px 0px #fff;
+        }
+
+        /* 작성 폼 스타일 */
+        .form-container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            margin-bottom: 35px;
+        }
+
+        .form-container h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ffd1e6;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--text-color);
+            background-color: #fff9fb;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .submit-btn:hover {
+            background-color: #ff65a3;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 스크롤 피드 스타일 */
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .message-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .message-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 25px rgba(255, 126, 185, 0.25);
+        }
+
+        .message-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; left: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #ffafcc, #ffc8dd);
+        }
+
+        /* 기본 상태: 2줄만 보이고 말줄임 처리 */
+        .message-content {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: #555;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-bottom: 20px;
+            
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 펼쳐졌을 때의 상태 */
+        .message-card.expanded .message-content {
+            display: block;
+            -webkit-line-clamp: unset;
+            overflow: visible;
+        }
+
+        /* 더보기 안내 텍스트 */
+        .expand-hint {
+            font-size: 0.9rem;
+            color: #bbb;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: normal;
+        }
+
+        .message-card.expanded .expand-hint {
+            display: none;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .message-author {
+            font-weight: 800;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .card-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* 수정/삭제 버튼 스타일 통일 */
+        .action-btn {
+            border: none;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .edit-btn {
+            background-color: #fff0f5;
+            color: #ff65a3;
+        }
+
+        .edit-btn:hover {
+            background-color: #ffe0ee;
+        }
+
+        .delete-btn {
+            background-color: #ffe6ee;
+            color: #ff4d94;
+        }
+
+        .delete-btn:hover {
+            background-color: #ffccd5;
+        }
+
+        /* 수정 모달창 스타일 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-sizing: border-box;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-cancel-btn {
+            background-color: #f1f1f1;
+            color: #777;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .modal-cancel-btn:hover {
+            background-color: #e2e2e2;
+        }
+
+        #tsparticles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        .loading-text {
+            text-align: center;
+            color: #ff7eb9;
+            font-size: 1.2rem;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body onpointerdown="createBubbleAt(event)">
+
+    <div id="tsparticles"></div>
+
+    <div class="container">
+        <div class="subtitle">주디스가 기주에게</div>
+
+        <!-- 새 글 작성 입력 폼 -->
+        <div class="form-container">
+            <h3>💌 축하 메시지 남기기</h3>
+            <form id="guestbookForm" onsubmit="addMessage(event)">
+                <div class="form-group">
+                    <input type="text" id="authorInput" class="form-input" placeholder="닉네임 (예: 주디스)" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="passwordInput" class="form-input" placeholder="비밀번호 4자리 (글 수정 시 필요해요!)" maxlength="4" pattern="[0-9]{4}" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="contentInput" class="form-textarea" placeholder="기주 배우님에게 전할 따뜻한 메시지를 남겨주세요! (이모티콘도 사용 가능해요 💕)" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn" id="submitBtn">등록하기 ✨</button>
+            </form>
+        </div>
+
+        <!-- 스크롤하며 보는 방명록 피드 -->
+        <div class="feed-container" id="feedContainer">
+            <div class="loading-text">메시지를 불러오는 중이에요... 💌</div>
+        </div>
+    </div>
+
+    <!-- 글 수정 모달창 -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-container">
+            <h3>✏️ 축하 메시지 수정하기</h3>
+            <form id="editForm" onsubmit="saveEditedMessage(event)">
+                <div class="form-group">
+                    <input type="text" id="editAuthorInput" class="form-input" placeholder="닉네임" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="editContentInput" class="form-textarea" placeholder="메시지 내용" required></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="modal-cancel-btn" onclick="closeEditModal()">취소</button>
+                    <button type="submit" class="submit-btn">수정 완료 ✨</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = "$2a$10$xUVsPp8EYIGwxO.4s7dvzeA.57/g/3y5uVlJ5LAZwT0rsqUnDzH0S"; 
+        
+        // 사용자가 발급받아온 고정 Bin ID를 직접 지정합니다.
+        const FIXED_BIN_ID = "6a91ca48f5f4af5e294eccb9";[cite: 5]
+
+        let guestbookData = [];
+        const feedContainer = document.getElementById('feedContainer');
+        let currentEditIndex = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initParticles();
+            await loadDataFromServer();
+        });
+
+        // 1. 서버에서 데이터 불러오기 (고정 Bin ID 사용)
+        async function loadDataFromServer() {
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${FIXED_BIN_ID}/latest`, {
+                    headers: {
+                        "X-Master-Key": API_KEY
+                    }
+                });
+                const data = await res.json();
+                guestbookData = data.record || [];
+            } catch (e) {
+                console.error("데이터 로드 실패:", e);
+                guestbookData = [];
+            }
+            renderFeed();
+        }
+
+        // 2. 서버에 데이터 통째로 업로드하기 (고정 Bin ID에 저장)
+        async function saveToServer() {
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${FIXED_BIN_ID}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Master-Key": API_KEY
+                    },
+                    body: JSON.stringify(guestbookData)
+                });
+            } catch (e) {
+                console.error("서버 저장 실패:", e);
+                alert("서버 저장 중 오류가 발생했습니다. 네트워크 상태를 확인해주세요!");
+            }
+        }
+
+        function renderFeed() {
+            if (guestbookData.length === 0) {
+                feedContainer.innerHTML = `<div class="loading-text">아직 작성된 메시지가 없어요! 첫 글을 남겨보세요 💕</div>`;
+                return;
+            }
+
+            feedContainer.innerHTML = guestbookData.map((item, index) => `
+                <div class="message-card" onclick="toggleCard(event, this)">
+                    <div class="message-content">${escapeHtml(item.content)}</div>
+                    <div class="expand-hint">👇 누르면 전체 내용이 보여요!</div>
+                    <div class="card-footer">
+                        <div class="message-author">${escapeHtml(item.author)}</div>
+                        <div class="card-buttons">
+                            <button class="action-btn edit-btn" onclick="openEditModal(event, ${index})">수정</button>
+                            <button class="action-btn delete-btn" onclick="deleteCard(event, ${index})">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 새 글 등록 함수
+        async function addMessage(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = "등록 중... ⏳";
+
+            const authorInput = document.getElementById('authorInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const contentInput = document.getElementById('contentInput');
+
+            const newPost = {
+                author: authorInput.value.trim(),
+                password: passwordInput.value.trim(),
+                content: contentInput.value.trim()
+            };
+
+            guestbookData.unshift(newPost);
+            
+            // 서버에 즉시 저장 후 화면 갱신
+            await saveToServer();
+            renderFeed();
+
+            authorInput.value = '';
+            passwordInput.value = '';
+            contentInput.value = '';
+            
+            submitBtn.disabled = false;
+            submitBtn.textContent = "등록하기 ✨";
+
+            alert("진기주 배우에게 응원 메세지를 남겨 주셔서 감사합니다 ♡");
+        }
+
+        function toggleCard(event, card) {
+            if(event.target.tagName === 'BUTTON') return;
+            card.classList.toggle('expanded');
+        }
+
+        function openEditModal(event, index) {
+            event.stopPropagation();
+            const inputPw = prompt("등록할 때 입력했던 4자리 비밀번호를 입력하세요:");
+            
+            if (inputPw === null) return;
+
+            if (inputPw === guestbookData[index].password) {
+                currentEditIndex = index;
+                document.getElementById('editAuthorInput').value = guestbookData[index].author;
+                document.getElementById('editContentInput').value = guestbookData[index].content;
+                document.getElementById('editModal').style.display = 'flex';
+            } else {
+                alert("비밀번호가 일치하지 않습니다!");
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditIndex = null;
+        }
+
+        async function saveEditedMessage(event) {
+            event.preventDefault();
+            if (currentEditIndex !== null) {
+                guestbookData[currentEditIndex].author = document.getElementById('editAuthorInput').value.trim();
+                guestbookData[currentEditIndex].content = document.getElementById('editContentInput').value.trim();
+
+                await saveToServer();
+                renderFeed();
+                closeEditModal();
+                alert("글이 성공적으로 수정되었습니다! ✨");
+            }
+        }
+
+        async function deleteCard(event, index) {
+            event.stopPropagation();
+            const password = prompt("관리자 비밀번호를 입력하세요:");
+            
+            if (password === "0111") {
+                guestbookData.splice(index, 1);
+                await saveToServer();
+                renderFeed();
+                alert("글이 삭제되었습니다.");
+            } else if (password !== null) {
+                alert("비밀번호가 틀렸습니다!");
+            }
+        }
+
+        function escapeHtml(text) {
+            if(!text) return text;
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        async function initParticles() {
+            await tsParticles.load({
+                id: "tsparticles",
+                options: {
+                    preset: "bubbles",
+                    fullScreen: { enable: true },
+                    particles: {
+                        number: { value: 0 },
+                        color: { value: ["#ffafcc", "#bde0fe", "#ffc8dd", "#fff"] },
+                        opacity: {
+                            value: { min: 0.4, max: 0.8 },
+                            animation: { enable: true, speed: 1.5, sync: false, startValue: "max", destroy: "min" }
+                        },
+                        size: {
+                            value: { min: 3, max: 8 },
+                            animation: { enable: true, speed: 6, sync: false, startValue: "max", destroy: "min" }
+                        },
+                        move: {
+                            enable: true,
+                            speed: 3,
+                            direction: "none",
+                            random: true,
+                            straight: false,
+                            outModes: { default: "destroy" }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createBubbleAt(event) {
+            const particles = tsParticles.domItem(0);
+            if (!particles) return;
+            particles.addParticle({ x: event.clientX, y: event.clientY }, 20);
+        }
+    </script>
+</body>
+</html>
